@@ -151,34 +151,39 @@ Her yorumu ayrı ayrı işler. Boş giriş geldiğinde (son 15 dk yorum yok) loo
 
 ---
 
-### DeepSeek ile Yanit Olustur
-**Tip:** AI Agent + DeepSeek Chat Model (deepseek-chat)
+### DeepSeek API Cagir
+**Tip:** HTTP Request (POST, v4.4)
 
-**System message:**
-```
-Sen {brandName} markasinin sosyal medya yoneticisisin.
-Ton: {brandTone}.
-En fazla 2 cumle, Turkce, sadece yanit metnini yaz,
-kullaniciyi adi ile hitap et.
+LangChain entegrasyonu yerine doğrudan DeepSeek REST API'si çağrılır. Bu yaklaşım bağımlılığı azaltır ve daha kararlı çalışır.
+
+- **URL:** `https://api.deepseek.com/chat/completions`
+- **Auth:** Bearer Token (`httpBearerAuth` credential)
+- **Model:** `deepseek-chat` (V3)
+- **Gövde (JSON):** OpenAI-uyumlu chat completions formatı
+
+```json
+{
+  "model": "deepseek-chat",
+  "temperature": 0.7,
+  "max_tokens": 200,
+  "messages": [
+    { "role": "system", "content": "Sen {brandName} markasinin..." },
+    { "role": "user",   "content": "Platform: ...\nYorum: ..." }
+  ]
+}
 ```
 
-**User prompt:**
-```
-Platform: {platform}
-Gonderi: {postCaption}
-Kullanici: {authorName}
-Yorum: {commentText}
-```
+**Çıktı:** `{ "choices": [{ "message": { "content": "yanit metni" } }] }`
 
-**Çıktı:** `{ "output": "yanit metni" }`
+**Credential:** n8n'de `HTTP Bearer Auth` türünde `DeepSeek API` adıyla ekle, token alanına [platform.deepseek.com](https://platform.deepseek.com) API key'ini gir.
 
 ---
 
 ### Yanit Baglamini Hazirla
 **Tip:** Set (manual)
 
-AI Agent çıktısı yalnızca `output` alanını içerir; orijinal `commentId` ve `platform` kaybolur. Bu node:
-- `replyText` = `$json.output`
+HTTP Request yanıtı yalnızca `choices` dizisini içerir; orijinal `commentId` ve `platform` kaybolur. Bu node:
+- `replyText` = `$json.choices[0].message.content`
 - `commentId` = upstream loop item'dan (`Yorumlari Duzlestir ve Filtrele` node'undan)
 - `platform` = upstream loop item'dan
 

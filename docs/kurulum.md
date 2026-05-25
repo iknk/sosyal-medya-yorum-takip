@@ -85,9 +85,11 @@ n8n'de:
 ### 2.2 DeepSeek API Credential
 
 1. [platform.deepseek.com](https://platform.deepseek.com) → **API Keys** → **Create new secret key**
-2. n8n'de **Add Credential** → **DeepSeek** seç
+2. n8n'de **Add Credential** → **HTTP Bearer Auth** seç
 3. İsim: `DeepSeek API`
-4. API Key'i yapıştır, kaydet
+4. **Token** alanına API key'ini yapıştır, kaydet
+
+> Workflow DeepSeek'i LangChain node'u yerine doğrudan HTTP Request ile çağırır. Bu nedenle credential türü "HTTP Bearer Auth" olmalıdır.
 
 ---
 
